@@ -1,0 +1,19 @@
+version: '3.7'
+services:
+  vault:
+    image: docker.iranserver.com/vault
+    container_name: prodvault
+    hostname: prodvault
+    environment:
+        VAULT_ADDR: http://127.0.0.1:8200
+    ports:
+        - "8200:8200"
+    volumes:
+        - private-volume:/vault/file:rw
+        - ./vault.json:/vault/config/vault.json:rw
+    cap_add:
+        - IPC_LOCK
+    entrypoint: vault server -config=/vault/config/vault.json
+
+volumes:
+  private-volume:
