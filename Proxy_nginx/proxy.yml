@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  nginx:
+    image: docker.iranserver.com/nginx:1.25.3
+    container_name: revers_proxy
+    hostname: rproxy
+    restart: always
+    privileged: true
+    user: root
+    network_mode: "host"
+    volumes:
+      - ./proxy.conf:/etc/nginx/conf.d/proxy.conf
+      - ./default.conf:/etc/nginx/conf.d/default.conf
