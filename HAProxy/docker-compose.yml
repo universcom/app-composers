@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  haproxy:
+    build: .
+    volumes:
+      - config_base:/etc/haproxy/base
+      - config_frontends:/etc/haproxy/frontends
+      - config_backends:/etc/haproxy/backends
+      - logs:/var/log/haproxy
+      - errors:/etc/haproxy/errors
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "haproxy", "-c", "-f", "/etc/haproxy/haproxy.cfg"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:  #The logging configuration provided in the Docker Compose file specifies how Docker should handle the logging for the HAProxy service within the container.
+      driver: json-file #This specifies the logging driver to be used by Docker for managing the container logs. The json-file driver is the default logging driver for Docker, which means it's commonly used unless explicitly changed. This driver writes log messages in JSON format to a file.
+      options: #Using this driver, each log entry by the container is stored as a JSON object in a log file. This object includes details such as the log message, time of the log entry, and stream type (stdout or stderr).
+        max-size: "1m" #This option sets the maximum size of a log file before it is rotated
+        max-file: "3" #This option specifies the maximum number of log files that Docker should maintain for the container.
+
+volumes:
+  config_base:
+    name: haproxy_config_base
+  config_frontends:
+    name: haproxy_config_frontends
+  config_backends:
+    name: haproxy_config_backends
+  logs:
+    name: haproxy_logs
+  errors:
+    name: haproxy_error_logs

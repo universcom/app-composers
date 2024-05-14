@@ -1,0 +1,26 @@
+# Use an official Ubuntu base image
+FROM ubuntu:20.04
+
+# Set environment variables to avoid any interactive dialogue from the OS
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install HAProxy
+RUN apt-get update && \
+    apt-get install -y haproxy && \
+    rm -rf /var/lib/apt/lists/*
+
+# Create necessary directories
+RUN mkdir -p /etc/haproxy/base /etc/haproxy/frontends /etc/haproxy/backends /etc/haproxy/errors
+
+# Add base HAProxy configuration
+COPY haproxy.cfg.base /etc/haproxy/base/haproxy.cfg.base
+
+# Copy the HAProxy update script and set it as the entry point
+COPY update-haproxy-config.sh /usr/local/bin/update-haproxy-config.sh
+RUN chmod +x /usr/local/bin/update-haproxy-config.sh
+
+# Expose default HAProxy ports
+EXPOSE 80 443
+
+# Use the update script as the entry point, it will also start HAProxy
+ENTRYPOINT ["/usr/local/bin/update-haproxy-config.sh"]
