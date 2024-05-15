@@ -1,0 +1,27 @@
+version: '3.6'
+services:
+  freeipa:
+    hostname: ipa1.YUOR_DOMAIN     
+    network_mode: "bridge"
+    image: freeipa/freeipa-server:rocky-9-4.10.2
+    container_name: freeipa-1
+    restart: unless-stopped
+    sysctls:
+      net.ipv6.conf.all.disable_ipv6: "0"
+    command: ipa-server-install --realm=YUOR_DOMAIN  --ds-password=DirectoryManagerPassword  --unattended
+    environment:
+      - PASSWORD=DASHBOARD_AUTH_PASSWORD
+ 
+    ports:
+     - "389:389"
+     - "636:636"
+     - "88:88/udp"
+     - "88:88/tcp"
+     - "464:464/udp"
+     - "464:464/tcp"
+     - "80:80"
+     - "443:443"
+    volumes:
+       - /etc/localtime:/etc/localtime:ro
+       - /var/lib/ipa-data:/data:Z
+       - /sys/fs/cgroup:/sys/fs/cgroup
